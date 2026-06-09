@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Air Quality Dashboard</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #0b1220;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 12px;
+    }
+
+    .value {
+      font-size: 22px;
+      margin-top: 8px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>📡 Air Quality Dashboard</h2>
+
+<div class="grid">
+
+  <div class="card">CO2 <div id="eco2" class="value">--</div></div>
+  <div class="card">Calitate <div id="calitate" class="value">--</div></div>
+  <div class="card">Temp <div id="temp" class="value">--</div></div>
+  <div class="card">Umiditate <div id="umid" class="value">--</div></div>
+  <div class="card">TVOC <div id="tvoc" class="value">--</div></div>
+  <div class="card">Stare Aer <div id="stare" class="value">--</div></div>
+  <div class="card">Ventilator <div id="vent" class="value">--</div></div>
+  <div class="card">LED <div id="led" class="value">--</div></div>  <!-- Adaugat pe 27. 05. 2026 -->
+  <div class="card">Pred_CO2_10<div id="pred_10" class="value">--</div></div> <!-- Adaugat pe 02. 06. 2026 -->
+  <div class="card">Pred_CO2_20<div id="pred_20" class="value">--</div></div> <!-- Adaugat pe 02. 06. 2026 -->
+  <div class="card">Pred_CO2_30<div id="pred_30" class="value">--</div></div> <!-- Modificat pe 02. 06. 2026 -->
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-messaging-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDBtlip8qmHek6KQ0HIMJVP248k6_7YgL8",
+  authDomain: "monitorizare-calitate-ae-bfdcf.firebaseapp.com",
+  databaseURL: "https://monitorizare-calitate-ae-bfdcf-default-rtdb.europe-west1.firebasedatabase.app/",
+  projectId: "monitorizare-calitate-ae-bfdcf",
+  messagingSenderId: "171867470024",
+  appId: "1:171867470024:web:4f6f982dec07bb15fd8dfd"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+const messaging = firebase.messaging();
+
+//  LIVE DATA
+db.ref("Sistem").on("value", (snap) => {
+  const d = snap.val();
+
+  document.getElementById("eco2").innerText = d.eco2 ?? "--";
+  document.getElementById("calitate").innerText = d.calitate_aer ?? "--";
+  document.getElementById("temp").innerText = (d.temperatura ?? "--") + "°C";
+  document.getElementById("umid").innerText = (d.umiditate ?? "--") + "%";
+  document.getElementById("tvoc").innerText = d.tvoc ?? "--";
+  document.getElementById("stare").innerText = d.stare_aer ?? "--";
+  document.getElementById("vent").innerText = d.ventilator ? "ON" : "OFF";
+  document.getElementById("led").innerText = d.led ? "ON" : "OFF"; //Adaugat pe 27. 05. 2026
+  document.getElementById("pred_10").innerText = d.pred_co2_10 ?? "--"; //Adaugat pe 02. 06. 2026
+  document.getElementById("pred_20").innerText = d.pred_co2_20 ?? "--"; //Adaugat pe 02. 06. 2026
+  document.getElementById("pred_30").innerText = d.pred_co2_30 ?? "--"; //Modificat pe 02. 06. 2026
+});
+
+//  SERVICE WORKER
+navigator.serviceWorker.register("firebase-messaging-sw.js");
+
+//  TOKEN + SAVE (FIX IMPORTANT)
+Notification.requestPermission().then(async (permission) => {
+  if (permission === "granted") {
+
+    const token = await messaging.getToken({
+      vapidKey: "BAgSQjeD5O7qoHsp23Yb7rV-6FC_xM4P9vYcT0jV6Tuqa2RJLhFv_Z17y5iNg_Yt_0DW01MctYACZ_BcM_uX5dA"
+    });
+    console.log('token', token)
+    if (token) {
+
+      db.ref("tokensWebPush").set({
+        token: token,
+        updatedAt: Date.now()
+      });
+    }
+  } else {
+    alert('Please enable notification permissions')
+  }
+});
+
+
+function displayNotification(payload){
+  console.log("display notification", payload)
+ const title = payload.data?.title;
+  const body = payload.data?.body;
+
+  new Notification(title, { body });
+}
+
+// FOREGROUND NOTIFICATIONS
+messaging.onMessage(displayNotification);
+</script>
+
+</body>
+</html>

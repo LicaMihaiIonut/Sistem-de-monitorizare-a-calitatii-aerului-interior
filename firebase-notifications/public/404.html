@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>404 - Page Not Found</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <style>
+    body {
+      min-height: 100vh;
+      background: #f5f7fa;
+    }
+
+    .error-card {
+      max-width: 420px;
+      border: none;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+
+    .error-code {
+      font-size: 72px;
+      font-weight: 700;
+      color: #0d6efd;
+      line-height: 1;
+    }
+
+    .error-text {
+      color: #6c757d;
+    }
+
+    .btn-home {
+      border-radius: 12px;
+      padding: 12px 22px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body class="d-flex align-items-center justify-content-center p-3">
+
+  <div class="card error-card w-100">
+    <div class="card-body text-center p-5">
+
+      <div class="error-code mb-3">
+        404
+      </div>
+
+      <h1 class="h3 fw-semibold mb-3">
+        Pagina nu a fost găsită
+      </h1>
+
+      <p class="error-text mb-4">
+        Pagina pe care încerci să o accesezi nu există
+        sau a fost mutată.
+      </p>
+
+      <a href="/" class="btn btn-primary btn-home">
+        Înapoi la homepage
+      </a>
+
+      <div class="small text-secondary mt-4">
+        Verifică URL-ul și încearcă din nou.
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
